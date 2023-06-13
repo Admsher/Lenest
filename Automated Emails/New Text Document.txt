@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <h6>"To unsubscribe, click here"</h6>
+    <a href="{{WEBAPP_URL}}?email={{EMAIL}}&unsubscribe_hash={{TOKEN}}">Unsubscribe</a>
+  </body>
+</html>

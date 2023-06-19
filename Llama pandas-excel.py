@@ -1,69 +1,31 @@
-"""Pandas Excel reader.
+import os
+os.environ['OPENAI_API_KEY']='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'
 
-Pandas parser for .xlsx files.
-
-"""
+from llama_index import GPTSimpleVectorIndex,SimpleDirectoryReader
+from llama_index import download_loader
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
-
-from llama_index.readers.base import BaseReader
-from llama_index.readers.schema.base import Document
+import streamlit as st
+import config 
 
 
-class PandasExcelReader(BaseReader):
-    r"""Pandas-based CSV parser.
+PandasExcelReader=download_loader("PandasExcelReader")
+loader=PandasExcelReader()
+documents=loader.load_data(file=Path('C:\BITS\PS 1\Data\videos.xlsx'),pandas_config={"title":1})
+index_excel=GPTSimpleVectorIndex.from_documents(documents)
+index_excel.save_to_disk('index_excel.json')
 
-    Parses CSVs using the separator detection from Pandas `read_csv`function.
-    If special parameters are required, use the `pandas_config` dict.
 
-    Args:
-
-        pandas_config (dict): Options for the `pandas.read_excel` function call.
-            Refer to https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html
-            for more information. Set to empty dict by default, this means defaults will be used.
-
-    """
-
-    def __init__(
-        self,
-        *args: Any,
-        pandas_config: dict = {},
-        concat_rows: bool = True,
-        **kwargs: Any
-    ) -> None:
-        """Init params."""
-        super().__init__(*args, **kwargs)
-        self._pandas_config = pandas_config
-        self._concat_rows = concat_rows
-
-    def load_data(
-        self, file: Path, sheet_name: Optional[Union[str, int]] = None, extra_info: Optional[Dict] = None
-    ) -> List[Document]:
-        """Parse file and extract values from a specific column.
-
-        Args:
-            file (Path): The path to the Excel file to read.
-            column_name (str): The name of the column to use when creating the Document objects.
-        Returns:
-            List[Document]: A list of`Document objects containing the values from the specified column in the Excel file.
-        """
-        import itertools
-
-        import pandas as pd
-        
-        df = pd.read_excel(file, sheet_name=sheet_name, **self._pandas_config)
-
-        keys = df.keys()
-
-        df_sheets = []
-
-        for key in keys:
-            sheet = df[key].values.astype(str).tolist()
-            df_sheets.append(sheet)
-
-        text_list = list(itertools.chain.from_iterable(df_sheets))  # flatten list of lists
-
-        if self._concat_rows:
-            return [Document((self._row_joiner).join(text_list), extra_info=extra_info)]
-        else:
-            return [Document(text, extra_info=extra_info) for text in text_list]
+def load_indexes():
+    index_excel=GPTSimpleVectorIndex.load_from_disk('index_excel.json')
+    return index_excel
+def main():
+    index_excel=load_indexes()
+    st.header('Lenest Chatbot')    
+    index=index_excel
+    query=st.text_input('Enter your Query')
+    button=st.button(f'Response')   
+    if button:
+        st.write(index.query(query))
+    
+if __name__ == '__main__':
+    main()

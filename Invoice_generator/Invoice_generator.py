@@ -1,33 +1,42 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jun 19 10:49:05 2023
-
-@author: varad
-
-"""
 import tkinter
 from tkinter import ttk
 from docxtpl import DocxTemplate 
 import datetime
+import time
+from datetime import date
+import pandas as pd
+from tkinter import *
+from openpyxl import load_workbook
+from tkinter import messagebox
+import os
 
 
+
+Dest_filename = 'C:/BITS/PS 1/New folder/opd medicine.xlsx'
+df=pd.read_excel(Dest_filename) 
+wb = load_workbook(Dest_filename)
+ws=wb["Sheet1"]
+df["medicine+price"]=df.MEDICINES.astype(str)+" -"+"₹"+df.PRICE.astype(str)
+medprice=df["medicine+price"]
 invoice_list=[]
+
 
 def clear_item():
     qty_spinbox.delete(0,tkinter.END)
     qty_spinbox.insert(0, "1")
-    desc_entry.delete(0,tkinter.END)
-    unit_entry.delete(0,tkinter.END)
-    unit_entry.insert(0,"0.0")
+    unit_entry1.delete(0,tkinter.END)
+    unit_entry1.insert(0,"0")
     
 
 
 def add_item():
     qty=int(qty_spinbox.get())
-    desc=desc_entry.get()
-    price=float(unit_entry.get())
-    line_total=qty*price
-    invoice_item=[qty,desc,price,line_total]
+    desc_temp=desc_entry.get(ANCHOR)
+    desc=desc_temp[:-6]  
+    price=float(unit_entry1.get())*(100-int(clicked1.get()))/100
+    finale_price=price
+    line_total=qty*(finale_price)
+    invoice_item=[desc,qty,finale_price,line_total]
     tree.insert('',0,values=invoice_item)
     invoice_list.append(invoice_item)
     
@@ -44,22 +53,31 @@ def new_invoice():
 
 
 def generate_invoice():
-    doc=DocxTemplate("C:/BITS/PS 1/New Folder/Invoice_template.docx")
+    doc=DocxTemplate("C:/BITS/PS 1/New Folder/invoice_template.docx")
     name=first_name_entry.get()+" "+last_name_entry.get()
     phone=phone_entry.get()
     subtotal=sum(item[3] for item in invoice_list)
     salestax=0.1
     total=subtotal*(1-salestax)
-    
+    invoice=int(ws['D2'].value)+1
+    today=date.today()
+    payment=clicked.get()
     doc.render({
+        "date":today,
+        "no":invoice,
         "name":name,
         "phone":phone,
         "invoice_list":invoice_list,
         "subtotal":subtotal,
-        "salestax":str(salestax*100)+"%",
-        "total":total })
-    doc_name="new_invoice"+name+datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")+".docx"
+        "total":total,
+        "payment":payment 
+        })
+    doc_name=name+datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")+".docx"
     doc.save("C:/BITS/PS 1/New Folder/"+doc_name)
+    ws['D2'].value=invoice
+    wb.save(Dest_filename)
+    messagebox.showinfo("Invoice Complete", "Invoice Complete")
+    os.startfile("C:/BITS/PS 1/New Folder/"+doc_name)
 
 window=tkinter.Tk()
 window.title("Invoice Form")
@@ -86,15 +104,35 @@ qty_label.grid(row=2,column=0)
 qty_spinbox=tkinter.Spinbox(frame,from_=1, to=100)
 qty_spinbox.grid(row=3,column=0)
 
-desc_label= tkinter.Label(frame,text="Description")
-desc_label.grid(row=2,column=1)
-desc_entry=tkinter.Entry(frame)
-desc_entry.grid(row=3,column=1)
+desc_entry=Listbox(window)
+for item in medprice:
+    desc_entry.insert(END,item)
+desc_box=tkinter.Label(frame,text=desc_entry.get(ANCHOR))
+desc_box.grid(row=6,column=1)
+desc_entry.pack(padx=10,pady=10)
 
-unit_price_label=tkinter.Label(frame,text="Unit Price")
-unit_price_label.grid(row=2,column=2)
-unit_entry=tkinter.Spinbox(frame,from_=10,to=7000,increment=1)
-unit_entry.grid(row=3,column=2)
+unit_price1_label= tkinter.Label(frame,text="Unit Price")
+unit_price1_label.grid(row=2,column=1)
+unit_entry1=tkinter.Spinbox(frame,from_=0,to=7000,increment=1)
+unit_entry1.grid(row=3,column=1)
+
+discount_label=tkinter.Label(frame,text="Discount")
+discount_label.grid(row=2,column=2)
+clicked1=StringVar()
+clicked1.set("20")
+discount_label_select=tkinter.OptionMenu(frame,clicked1,"0","20","30")
+discount_label_select.grid(row=3,column=2)
+
+
+
+clicked=StringVar()
+clicked.set("Cash")
+payment_method=tkinter.Label(frame,text="Payment mode")
+payment_method.grid(row=2,column=3)
+payment_select=tkinter.OptionMenu(frame,clicked,"Cash","Card","UPI","Online Banking")
+payment_select.grid(row=3,column=3)
+
+
 
 columns=('qty','desc','price','total')
 tree=ttk.Treeview(frame,columns=columns,show="headings")

@@ -12,7 +12,7 @@ import os
 
 
 
-Dest_filename = 'C:/BITS/PS 1/New folder/opd medicine.xlsx'
+Dest_filename = 'filepath'
 df=pd.read_excel(Dest_filename) 
 wb = load_workbook(Dest_filename)
 ws=wb["Sheet1"]
@@ -53,7 +53,7 @@ def new_invoice():
 
 
 def generate_invoice():
-    doc=DocxTemplate("C:/BITS/PS 1/New Folder/invoice_template.docx")
+    doc=DocxTemplate("filepath")
     name=first_name_entry.get()+" "+last_name_entry.get()
     phone=phone_entry.get()
     subtotal=sum(item[3] for item in invoice_list)
@@ -73,11 +73,11 @@ def generate_invoice():
         "payment":payment 
         })
     doc_name=name+datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")+".docx"
-    doc.save("C:/BITS/PS 1/New Folder/"+doc_name)
+    doc.save("folderpath"+doc_name)
     ws['D2'].value=invoice
     wb.save(Dest_filename)
     messagebox.showinfo("Invoice Complete", "Invoice Complete")
-    os.startfile("C:/BITS/PS 1/New Folder/"+doc_name)
+    os.startfile("folderpath"+doc_name)
 
 window=tkinter.Tk()
 window.title("Invoice Form")

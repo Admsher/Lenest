@@ -10,7 +10,7 @@ import pandas as pd
 
 
 
-Filename='C:/BITS/PS 1/New folder/Tests.xlsx'
+Filename='excel file path'
 excel_chart=load_workbook(Filename,data_only=True, keep_vba=True)
 schedule_sheet=excel_chart[excel_chart.sheetnames[0]]
 symptom_sheet=excel_chart[excel_chart.sheetnames[1]]
@@ -79,7 +79,7 @@ def clear():
 
 
 def confirm():
-     doc=DocxTemplate('C:/BITS/PS 1/New folder/chart.docx')
+     doc=DocxTemplate('template path')
      name=first_name_entry.get()+last_name_entry.get()
      day_date=int(day.get())
      month_date=int(month.get())
@@ -92,9 +92,9 @@ def confirm():
      })
 
      doc_name=name+str(expected_date)+".docx"
-     doc.save('C:/BITS/PS 1/New Folder/'+doc_name)
+     doc.save('Where to save'+doc_name)
      messagebox.showinfo("Alert", "Document ready")
-     os.startfile('C:/BITS/PS 1/New Folder/'+doc_name)
+     os.startfile('Where to save'+doc_name)
 
 
 def Window2():

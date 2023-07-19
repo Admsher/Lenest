@@ -12,72 +12,72 @@ import os
 
 
 
-# Dest_filename = 'filepath'
-# df=pd.read_excel(Dest_filename) 
-# wb = load_workbook(Dest_filename)
-# ws=wb["Sheet1"]
-# df["medicine+price"]=df.MEDICINES.astype(str)+" -"+"₹"+df.PRICE.astype(str)
-# medprice=df["medicine+price"]
-# invoice_list=[]
+Dest_filename = 'filepath'
+df=pd.read_excel(Dest_filename) 
+wb = load_workbook(Dest_filename)
+ws=wb["Sheet1"]
+df["medicine+price"]=df.MEDICINES.astype(str)+" -"+"₹"+df.PRICE.astype(str)
+medprice=df["medicine+price"]
+invoice_list=[]
 
 
-# def clear_item():
-#     qty_spinbox.delete(0,tkinter.END)
-#     qty_spinbox.insert(0, "1")
-#     unit_entry1.delete(0,tkinter.END)
-#     unit_entry1.insert(0,"0")
+def clear_item():
+    qty_spinbox.delete(0,tkinter.END)
+    qty_spinbox.insert(0, "1")
+    unit_entry1.delete(0,tkinter.END)
+    unit_entry1.insert(0,"0")
     
 
 
-# def add_item():
-#     qty=int(qty_spinbox.get())
-#     desc_temp=desc_entry.get(ANCHOR)
-#     desc=desc_temp[:-6]  
-#     price=float(unit_entry1.get())*(100-int(clicked1.get()))/100
-#     finale_price=price
-#     line_total=qty*(finale_price)
-#     invoice_item=[desc,qty,finale_price,line_total]
-#     tree.insert('',0,values=invoice_item)
-#     invoice_list.append(invoice_item)
+def add_item():
+    qty=int(qty_spinbox.get())
+    desc_temp=desc_entry.get(ANCHOR)
+    desc=desc_temp[:-6]  
+    price=float(unit_entry1.get())*(100-int(clicked1.get()))/100
+    finale_price=price
+    line_total=qty*(finale_price)
+    invoice_item=[desc,qty,finale_price,line_total]
+    tree.insert('',0,values=invoice_item)
+    invoice_list.append(invoice_item)
     
-#     clear_item()
+    clear_item()
 
-# def new_invoice():
-#     first_name_entry.delete(0,tkinter.END)
-#     last_name_entry.delete(0,tkinter.END)
-#     phone_entry.delete(0,tkinter.END)
-#     clear_item()    
-#     tree.delete(*tree.get_children())
+def new_invoice():
+    first_name_entry.delete(0,tkinter.END)
+    last_name_entry.delete(0,tkinter.END)
+    phone_entry.delete(0,tkinter.END)
+    clear_item()    
+    tree.delete(*tree.get_children())
                 
-#     invoice_list.clear()
+    invoice_list.clear()
 
 
-# def generate_invoice():
-#     doc=DocxTemplate("filepath")
-#     name=first_name_entry.get()+" "+last_name_entry.get()
-#     phone=phone_entry.get()
-#     subtotal=sum(item[3] for item in invoice_list)
-#     salestax=0.1
-#     total=subtotal*(1-salestax)
-#     invoice=int(ws['D2'].value)+1
-#     today=date.today()
-#     payment=clicked.get()
-#     doc.render({
-#         "date":today,
-#         "no":invoice,
-#         "name":name,
-#         "phone":phone,
-#         "invoice_list":invoice_list,
-#         "subtotal":subtotal,
-#         "total":total,
-#         "payment":payment 
-#         })
-#     doc_name=name+datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")+".docx"
-#     doc.save("folderpath"+doc_name)
-#     ws['D2'].value=invoice
-#     wb.save(Dest_filename)
-#     messagebox.showinfo("Invoice Complete", "Invoice Complete")
-#     os.startfile("folderpath"+doc_name)
+def generate_invoice():
+    doc=DocxTemplate("filepath")
+    name=first_name_entry.get()+" "+last_name_entry.get()
+    phone=phone_entry.get()
+    subtotal=sum(item[3] for item in invoice_list)
+    salestax=0.1
+    total=subtotal*(1-salestax)
+    invoice=int(ws['D2'].value)+1
+    today=date.today()
+    payment=clicked.get()
+    doc.render({
+        "date":today,
+        "no":invoice,
+        "name":name,
+        "phone":phone,
+        "invoice_list":invoice_list,
+        "subtotal":subtotal,
+        "total":total,
+        "payment":payment 
+        })
+    doc_name=name+datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")+".docx"
+    doc.save("folderpath"+doc_name)
+    ws['D2'].value=invoice
+    wb.save(Dest_filename)
+    messagebox.showinfo("Invoice Complete", "Invoice Complete")
+    os.startfile("folderpath"+doc_name)
 
 window=tkinter.Tk()
 window.title("Invoice Form")

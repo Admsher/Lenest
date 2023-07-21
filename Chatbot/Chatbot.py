@@ -1,7 +1,5 @@
 
 
-from ast import arg
-from turtle import onclick
 import streamlit as st
 from streamlit_chat import message
 import gspread
@@ -13,7 +11,7 @@ from openpyxl import load_workbook
 # creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
 # gc = gspread.authorize(creds)
 
-workbook=load_workbook("C:/BITS/PS 1/Streamlit-Chatbot/videos.xlsx",data_only=True) 
+workbook=load_workbook("videos.xlsx",data_only=True) 
 worksheet=workbook[workbook.sheetnames[0]]
 if "history" not in st.session_state:
     st.session_state.history = []
@@ -21,7 +19,6 @@ if "key" not in st.session_state:
      st.session_state.key=[]    
 
 def Hotstart(): 
-    
     st.session_state.key.append(Hotstart)
     message("Hi this is a chatbot brought to you by Lenest,please select one of the option number to continue.",is_user=False)
     st.button("Weekly tips for Pregnancy.",on_click=Week_answer)
@@ -151,7 +148,7 @@ def For_Women():
 def For_Men():
         st.session_state.key.append(For_Men)   
         message("Here are some videos you asked for:")
-        for i in range (0,int(worksheet["AN4"].value)): 
+        for i in range (0,int(worksheet["AN4"].value+1)): 
             if(worksheet.cell(int(i+2),8).value==None or worksheet.cell(int(i+2),9).value==None):
                 continue
             message_bot=((worksheet.cell(int(i+2),8).value)+" - "+(worksheet.cell(int(i+2),9).value))
@@ -389,7 +386,8 @@ def Goback():
      if len(st.session_state.key)==0 or len(st.session_state.key)==1:
           None
      else:
-        (st.session_state.key[len(st.session_state.key)-2]())
+        del st.session_state.key[-1]
+        st.session_state.key[len(st.session_state.key)-1]()
           
        
           
